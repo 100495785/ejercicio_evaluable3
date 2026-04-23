@@ -8,7 +8,7 @@ RPCLIBS = -ltirpc
 .PHONY: all clean rpcgen
 
 # Regla por defecto que compila todo
-all: rpcgen libclaves.so libproxyclaves.so clavesRPC_server cliente
+all: libclaves.so libproxyclaves.so clavesRPC_server cliente
 
 # 1. Generación automática de ficheros RPC a partir del .x
 rpcgen: clavesRPC.h clavesRPC_clnt.c clavesRPC_svc.c clavesRPC_xdr.c
@@ -59,4 +59,4 @@ app-cliente.o: app-cliente.c claves.h
 
 # 4. Limpieza de archivos generados
 clean:
-	rm -f *.o *.so clavesRPC_server cliente clavesRPC.h clavesRPC_clnt.c clavesRPC_svc.c clavesRPC_xdr.c
+	rm -f *.o *.so clavesRPC_server cliente
