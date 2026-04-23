@@ -144,7 +144,7 @@ main (int argc, char **argv)
 	register SVCXPRT *transp;
 
 	pmap_unset (CLAVESRPC_PROG, CLAVESRPC_VERS);
-/*
+
 	transp = svcudp_create(RPC_ANYSOCK);
 	if (transp == NULL) {
 		fprintf (stderr, "%s", "cannot create udp service.");
@@ -154,7 +154,7 @@ main (int argc, char **argv)
 		fprintf (stderr, "%s", "unable to register (CLAVESRPC_PROG, CLAVESRPC_VERS, udp).");
 		exit(1);
 	}
-*/
+
 
 	transp = svctcp_create(RPC_ANYSOCK, 0, 0);
 	if (transp == NULL) {
