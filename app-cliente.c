@@ -188,8 +188,11 @@ int main(void) {
     }
 
     // 18. limpieza final: borrar claves creadas
-    CHECK_EQ_INT("delete_key k_min", delete_key(key_min), 0);
-    CHECK_EQ_INT("delete_key k_max", delete_key(key_max), 0);
+    r = delete_key(key_min);
+    CHECK_EQ_INT("delete_key k_min", r, 0);
+
+    r = delete_key(key_max);
+    CHECK_EQ_INT("delete_key k_max", r, 0);
 
     printf("=== TODO OK ===\n");
     return 0;
