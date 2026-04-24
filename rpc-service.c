@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
+#include <unistd.h>
 #include <rpc/rpc.h>
 
 #include "claves.h"
@@ -8,6 +10,24 @@
 
 #define MAX_STR 256
 #define MAX_V2 32
+
+static void cerrar_servidor(int sig) {
+    (void)sig;
+
+    const char msg[] = "\n[SERVIDOR] Cerrando servidor de forma segura...\n";
+    write(STDOUT_FILENO, msg, sizeof(msg) - 1);
+
+    _exit(0);
+}
+
+__attribute__((constructor))
+static void inicializar_servidor(void) {
+    printf("[SERVIDOR] Servidor escuchando peticiones RPC...\n");
+    fflush(stdout);
+
+    signal(SIGINT, cerrar_servidor);
+    signal(SIGTERM, cerrar_servidor);
+}
 
 static struct Paquete rpc_a_local_paquete(PaqueteRPC p) {
     struct Paquete out;
@@ -28,9 +48,10 @@ static PaqueteRPC local_a_rpc_paquete(struct Paquete p) {
 bool_t destroy_1_svc(int *result, struct svc_req *rqstp) {
     (void)rqstp;
 
-    if (result == NULL) {
-        return FALSE;
-    }
+    printf("[SERVIDOR] PETICION: DESTROY\n");
+    fflush(stdout);
+
+    if (result == NULL) return FALSE;
 
     *result = destroy();
     return TRUE;
@@ -41,9 +62,10 @@ bool_t set_value_1_svc(ArgsSetModify arg1, int *result, struct svc_req *rqstp) {
 
     (void)rqstp;
 
-    if (result == NULL) {
-        return FALSE;
-    }
+    printf("[SERVIDOR] PETICION: SET_VALUE\n");
+    fflush(stdout);
+
+    if (result == NULL) return FALSE;
 
     p = rpc_a_local_paquete(arg1.value3);
 
@@ -66,9 +88,10 @@ bool_t get_value_1_svc(char *arg1, GetValueResult *result, struct svc_req *rqstp
 
     (void)rqstp;
 
-    if (result == NULL) {
-        return FALSE;
-    }
+    printf("[SERVIDOR] PETICION: GET_VALUE\n");
+    fflush(stdout);
+
+    if (result == NULL) return FALSE;
 
     memset(result, 0, sizeof(*result));
 
@@ -91,6 +114,7 @@ bool_t get_value_1_svc(char *arg1, GetValueResult *result, struct svc_req *rqstp
     result->N_value2 = n_value2;
     result->V_value2.V_value2_len = n_value2;
     result->V_value2.V_value2_val = (float *)malloc(sizeof(float) * n_value2);
+
     if (result->V_value2.V_value2_val == NULL) {
         free(result->value1);
         result->value1 = NULL;
@@ -112,9 +136,10 @@ bool_t modify_value_1_svc(ArgsSetModify arg1, int *result, struct svc_req *rqstp
 
     (void)rqstp;
 
-    if (result == NULL) {
-        return FALSE;
-    }
+    printf("[SERVIDOR] PETICION: MODIFY_VALUE\n");
+    fflush(stdout);
+
+    if (result == NULL) return FALSE;
 
     p = rpc_a_local_paquete(arg1.value3);
 
@@ -132,9 +157,10 @@ bool_t modify_value_1_svc(ArgsSetModify arg1, int *result, struct svc_req *rqstp
 bool_t delete_key_1_svc(char *arg1, int *result, struct svc_req *rqstp) {
     (void)rqstp;
 
-    if (result == NULL) {
-        return FALSE;
-    }
+    printf("[SERVIDOR] PETICION: DELETE_KEY\n");
+    fflush(stdout);
+
+    if (result == NULL) return FALSE;
 
     if (arg1 == NULL) {
         *result = -1;
@@ -148,9 +174,10 @@ bool_t delete_key_1_svc(char *arg1, int *result, struct svc_req *rqstp) {
 bool_t exist_1_svc(char *arg1, int *result, struct svc_req *rqstp) {
     (void)rqstp;
 
-    if (result == NULL) {
-        return FALSE;
-    }
+    printf("[SERVIDOR] PETICION: EXIST\n");
+    fflush(stdout);
+
+    if (result == NULL) return FALSE;
 
     if (arg1 == NULL) {
         *result = -1;
@@ -159,4 +186,14 @@ bool_t exist_1_svc(char *arg1, int *result, struct svc_req *rqstp) {
 
     *result = exist(arg1);
     return TRUE;
+}
+
+int clavesrpc_prog_1_freeresult(SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result) {
+    (void)transp;
+
+    if (result != NULL) {
+        xdr_free(xdr_result, result);
+    }
+
+    return 1;
 }
