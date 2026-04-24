@@ -29,4 +29,4 @@ program CLAVESRPC_PROG {
         int DELETE_KEY(string) = 5;
         int EXIST(string) = 6;
     } = 1;
-} = 0x20000001;
+} = 0x31249882;

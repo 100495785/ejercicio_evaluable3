@@ -160,3 +160,9 @@ bool_t exist_1_svc(char *arg1, int *result, struct svc_req *rqstp) {
     *result = exist(arg1);
     return TRUE;
 }
+
+int clavesrpc_prog_1_freeresult(SVCXPRT *transp, xdrproc_t xdr_result, caddr_t result) {
+    (void) transp;
+    xdr_free(xdr_result, result);
+    return 1;
+}
