@@ -43,12 +43,12 @@ clavesRPC_xdr.o: clavesRPC_xdr.c clavesRPC.h
 clavesRPC_svc.o: clavesRPC_svc.c clavesRPC.h
 	$(CC) $(CPPFLAGS) $(RPCGEN_CFLAGS) -c $<
 
-rpc-service.o: rpc-service.c claves.h clavesRPC.h
+rpc_service.o: rpc_service.c claves.h clavesRPC.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
 # 4. Creación del ejecutable del servidor RPC
-clavesRPC_server: clavesRPC_svc.o rpc-service.o clavesRPC_xdr.o libclaves.so
-	$(CC) -o $@ clavesRPC_svc.o rpc-service.o clavesRPC_xdr.o $(LDFLAGS) -lclaves $(RPCLIBS) -lpthread
+clavesRPC_server: clavesRPC_svc.o rpc_service.o clavesRPC_xdr.o libclaves.so
+	$(CC) -o $@ clavesRPC_svc.o rpc_service.o clavesRPC_xdr.o $(LDFLAGS) -lclaves $(RPCLIBS) -lpthread
 
 app-cliente.o: app-cliente.c claves.h
 	$(CC) $(CFLAGS) -c $<
