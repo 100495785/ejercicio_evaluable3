@@ -8,13 +8,13 @@ RPCLIBS = -ltirpc
 .PHONY: all clean rpcgen
 
 # Regla por defecto que compila todo
-all: libclaves.so libproxyclaves.so clavesRPC_server cliente
+all: rpcgen libclaves.so libproxyclaves.so clavesRPC_server cliente
 
 # 1. Generación automática de ficheros RPC a partir del .x
-rpcgen: clavesRPC.h clavesRPC_clnt.c clavesRPC_svc.c clavesRPC_xdr.c
+rpcgen: clavesRPC.h clavesRPC_clnt.c clavesRPC_svc.c clavesRPC_xdr.c clavesRPC_client.c clavesRPC_server.c
 
-clavesRPC.h clavesRPC_clnt.c clavesRPC_svc.c clavesRPC_xdr.c: clavesRPC.x
-	rpcgen -NM clavesRPC.x
+clavesRPC.h clavesRPC_clnt.c clavesRPC_svc.c clavesRPC_xdr.c clavesRPC_client.c clavesRPC_server.c: clavesRPC.x
+	rpcgen -aNM clavesRPC.x
 
 # 2. Creación de las bibliotecas dinámicas (.so)
 
@@ -50,7 +50,7 @@ clavesRPC_svc.o: clavesRPC_svc.c clavesRPC.h
 rpc_service.o: rpc_service.c claves.h clavesRPC.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
 
-# Ejecutable del cliente
+# Ejecutable del cliente (enlaza con libproxyclaves.so)
 cliente: app-cliente.o libproxyclaves.so
 	$(CC) -o $@ app-cliente.o $(LDFLAGS) -lproxyclaves $(RPCLIBS)
 
@@ -59,4 +59,4 @@ app-cliente.o: app-cliente.c claves.h
 
 # 4. Limpieza de archivos generados
 clean:
-	rm -f *.o *.so clavesRPC_server cliente
+	rm -f *.o *.so clavesRPC_server cliente clavesRPC.h clavesRPC_clnt.c clavesRPC_svc.c clavesRPC_xdr.c clavesRPC_client.c clavesRPC_server.c
